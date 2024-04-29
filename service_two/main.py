@@ -9,17 +9,12 @@ channel = connection.channel()
 # Create a rabbitmq queue, otherwise message will be ddropped
 channel.queue_declare(queue='hellos')
 
-# message should always pass through an exchange
-
-channel.basic_publish(exchange='',
-                      routing_key='hellos',
-                      body='Hey hddwow wecfweadcdre!')
-print(" [x] Sent 'Hello World!'")
+def callback(ch, method, properties, body):
+    print(f" [x] Received {body}")
+    
 
 
-connection.close()
+channel.basic_consume(queue='hellos', on_message_callback=callback, auto_ack=True)
 
-
-# @app.get('/')
-# def one():
-#     return "hello service one"
+print(' [*] Waiting for messages. To exit press CTRL+C')
+channel.start_consuming()
